@@ -1,5 +1,5 @@
 let api = "localhost:5000/";
-let socket = io();
+let socket = null;
 let calcs_list = [];
 
 
@@ -138,3 +138,7 @@ document.getElementById("calc-field").onkeypress =  (e) => {
         has_changed = true;
     }
 };
+
+window.onload(() => {
+    socket = io();
+})
