@@ -6,13 +6,18 @@
     <title>NetCalc</title>
 </head>
 <body>
-   <h2>Calculator</h2>
+    <h2>Calculator</h2>
+    <h3 class="error" id="input-error" display="none">
+        Error: invalid input
+    </h3>
+    <input type="text" id="calc-field">
+    <button id="calc-button">Calculate</button>
+    <div id = output>
+        Result: <span id="num-span"></span>
+    </div>
 
-   <input type="text" id="calc-field">
-   <button id="calc-button">Calculate</button>
-
-   <h3>Previous Calculations</h3>
-   <ul id="prev-calcs"></ul>
+    <h3>Previous Calculations</h3>
+    <ul id="prev-calcs"></ul>
 <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"
     integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
 <script src="frontend.js"></script>
