@@ -15,10 +15,29 @@ function render_calc_list(calc_list) {
     }
 }
 
+// Returns a string representing a nubmer
+function num_repr(num) {
+    if (Number.isInteger(num)) {
+        return  num.toString();
+    } else if (!isNaN(num)) {
+        return num.toFixed(3);
+    } else {
+        return "NaN";
+    }
+}
+
+function hide_errors() {
+    document.getElementById("input-error").style.display = "none";
+}
+
+function show_input_error() {
+    document.getElementById("input-error").style.display = "block";
+}
+
 // Returns null or returns an array where [0] is the numeric
 // result of the computation and [1] is the string representation
 function calc_w_str(str) {
-    let math_regex = /^\s*([-+]?[0-9]*\.?[0-9]+)\s*(\+|\-|\*|\/)\s*([-+]?[0-9]*\.?[0-9]+)\s*$/
+    let math_regex = /^\s*([-+]?[0-9]*\.?[0-9]+)\s*(\+|\-|\*|\/)\s*([0-9]*\.?[0-9]+)\s*$/
     let matches = math_regex.exec(str);
     if (matches == null || matches.length != 4) {
         return null;
@@ -52,16 +71,46 @@ function calc_w_str(str) {
     if (isNaN(res)) {
         return null;
     }
-    let str_rep = str.concat(" = ", res.toFixed(3))
+    let str_rep = str.concat(" = ", num_repr(res))
     return [res, str_rep];
 }
 
+// Keep track of previous input to prevent calculation from being run
+// many times, clogging data
+let last_input = "";
+
 function run_calculation() {
+    hide_errors();
     let input = document.getElementById("calc-field").value;
+    if (last_input == input) {
+        return; // Short circuit if running with the same input
+    }
+    last_input = input // Don't rerun this calculation
+    console.log("Calculating with input: " + input);
+    // Early return if input is empty
+    if (/^\s*$/.test(input)) { // match whitespace only input
+        return;
+    }
+
     let output = calc_w_str(input);
-    document.getElementById("output-span").innerHTML
+    if (output != null) {
+        document.getElementById("output-span").innerHTML =
+            num_repr(output[0]);
+        fetch("/push_calc", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                "new_calc" : output[1]
+            })
+        });
+    } else {
+        show_input_error();
+    }
 }
 
+// Events to register upon loading
 socket.on('init_list', (data) => {
     render_calc_list(data);
     calcs_list = data;
@@ -74,3 +123,17 @@ socket.on('new_calc', (calc) => {
     render_calc_list(calcs_list);
     console.log(calc);
 });
+
+hide_errors();
+
+// Trigger calculation if button is clicked
+document.getElementById("calc-button").onclick = run_calculation;
+
+// Trigger calculation if enter key is pressed
+document.getElementById("calc-field").onkeypress =  (e) => {
+    if (e.keyCode == 13 || e.which == 13) {
+        run_calculation();
+    } else {
+        has_changed = true;
+    }
+};
