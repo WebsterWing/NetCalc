@@ -1,5 +1,7 @@
 let api = "localhost:5000/";
-let socket = io(api, {origins : "localhost"});
+let socket = io();
+let calcs_list = [];
+let math_regex = /^\s*([-+]?[0-9]*\.?[0-9]+)\s*(\+|\-|\*|\/)\s*([-+]?[0-9]*\.?[0-9]+)\s*$/
 
 // render the calculations list
 function render_calc_list(calc_list) {
@@ -13,12 +15,16 @@ function render_calc_list(calc_list) {
     }
 }
 
-render_calc_list([
-    "Placeholder 1",
-    "Placeholder 2",
-    "Placeholder 3"
-]);
 
-socket.on('calc', (data) => {
+socket.on('init_list', (data) => {
+    render_calc_list(data);
+    calcs_list = data;
     console.log(data);
+});
+
+socket.on('new_calc', (calc) => {
+    calcs_list.unshift(calc.new_calc);
+    calcs_list = calcs_list.slice(0,9);
+    render_calc_list(calcs_list);
+    console.log(calc);
 });
