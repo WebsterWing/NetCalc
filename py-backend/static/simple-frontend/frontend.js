@@ -128,7 +128,7 @@ document.getElementById("calc-field").onkeypress =  (e) => {
     }
 };
 
-window.onload(() => {
+window.onload = () => {
     socket = io();
     socket.on('init_list', (data) => {
         render_calc_list(data);
@@ -142,4 +142,4 @@ window.onload(() => {
         render_calc_list(calcs_list);
         console.log(calc);
     });
-});
+};
