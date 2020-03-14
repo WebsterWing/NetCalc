@@ -98,6 +98,7 @@ function run_calculation() {
             num_repr(output[0]);
         fetch("/push_calc", {
             method: "POST",
+            mode: 'cors',
             headers: {
                 'Content-Type': 'application/json'
             },
