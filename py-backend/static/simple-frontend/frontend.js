@@ -112,18 +112,7 @@ function run_calculation() {
 }
 
 // Events to register upon loading
-socket.on('init_list', (data) => {
-    render_calc_list(data);
-    calcs_list = data;
-    console.log(data);
-});
 
-socket.on('new_calc', (calc) => {
-    calcs_list.unshift(calc.new_calc);
-    calcs_list = calcs_list.slice(0,9);
-    render_calc_list(calcs_list);
-    console.log(calc);
-});
 
 hide_errors();
 
@@ -141,4 +130,16 @@ document.getElementById("calc-field").onkeypress =  (e) => {
 
 window.onload(() => {
     socket = io();
-})
+    socket.on('init_list', (data) => {
+        render_calc_list(data);
+        calcs_list = data;
+        console.log(data);
+    });
+
+    socket.on('new_calc', (calc) => {
+        calcs_list.unshift(calc.new_calc);
+        calcs_list = calcs_list.slice(0,9);
+        render_calc_list(calcs_list);
+        console.log(calc);
+    });
+});
